@@ -23,7 +23,7 @@ class LangSelector extends Component {
             <FormControl componentClass="select" disabled={busy} value={language} onChange={this.handleChange}>
                 <option value="heb" defaultValue={true}>עברית</option>
                 <option value="eng">אנגלית</option>
-                <option value="arb">ערבית</option>
+                <option value="ara">ערבית</option>
             </FormControl>
         )
     }
@@ -34,12 +34,23 @@ class SearchBox extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+        this.handleTopic1Change = this.handleTopic1Change.bind(this);
+        this.handleTopic2Change = this.handleTopic2Change.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleNonCacheSearch = this.handleNonCacheSearch.bind(this);
     }
 
     handleChange(e) {
         this.props.onTextChange(e.target.value);
+    }
+
+    handleTopic1Change(e) {
+        this.props.onTopic1Change(e.target.value);
+    }
+
+    handleTopic2Change(e) {
+        this.props.onTopic2Change(e.target.value);
     }
 
     handleKeyPress(e) {
@@ -52,18 +63,45 @@ class SearchBox extends Component {
         this.props.onSearch();
     }
 
+    handleNonCacheSearch() {
+        this.props.onNonCacheSearch();
+    }
+
     render() {
         const { searchText, busy, busyMessage, language, onLanguageChange } = this.props;
         return (
             <Grid>
                 <Row>
-                    <Col md={3}>
+                    <Col md={12}>
                         <FormGroup>
-                            <ControlLabel>&nbsp;</ControlLabel>
-                            <SearchActions searchText={searchText} onSearch={this.handleSearch} busy={busy} busyMessage={busyMessage} />
+                            <ControlLabel>הזינו טקסט לחיפוש חופשי</ControlLabel>
+                            <FormControl type="text" value={searchText.freeText}
+                                         onChange={this.handleChange}
+                                         onKeyPress={this.handleKeyPress}
+                                         disabled={busy} />
+                        </FormGroup>
+                        <FormGroup>
+                            <ControlLabel>הזינו נושאים לחיפוש מדויק</ControlLabel>
+                            <FormControl type="text" value={searchText.topics[0]}
+                                         onChange={this.handleTopic1Change}
+                                         onKeyPress={this.handleKeyPress}
+                                         disabled={busy} />
+                            בשילוב עם
+                            <FormControl type="text" value={searchText.topics[1]}
+                                         onChange={this.handleTopic2Change}
+                                         onKeyPress={this.handleKeyPress}
+                                         disabled={busy} />
                         </FormGroup>
                     </Col>
-                    <Col md={3}>
+                </Row>
+                <Row>
+                    <Col md={6}>
+                        <FormGroup>
+                            <ControlLabel>&nbsp;</ControlLabel>
+                            <SearchActions onSearch={this.handleSearch} onNonCacheSearch={this.handleNonCacheSearch} busy={busy} busyMessage={busyMessage} />
+                        </FormGroup>
+                    </Col>
+                    <Col md={6}>
                         <FormGroup>
                             <ControlLabel>שפה</ControlLabel>
                             <LangSelector busy={busy}
@@ -72,15 +110,7 @@ class SearchBox extends Component {
                             />
                         </FormGroup>
                     </Col>
-                    <Col md={6}>
-                        <FormGroup>
-                            <ControlLabel>הזינו טקסט לחיפוש ברשימה המאוחדת</ControlLabel>
-                            <FormControl type="text" value={searchText}
-                                         onChange={this.handleChange}
-                                         onKeyPress={this.handleKeyPress}
-                                         disabled={busy} />
-                        </FormGroup>
-                    </Col>
+
                 </Row>
             </Grid>
         )
@@ -92,18 +122,27 @@ class SearchActions extends Component {
     constructor(props) {
         super(props);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleNonCacheSearch = this.handleNonCacheSearch.bind(this);
     }
 
     handleSearch() {
         this.props.onSearch();
     }
 
+    handleNonCacheSearch() {
+        this.props.onNonCacheSearch();
+    }
+
     render() {
-        const { searchtext, busy, busyMessage } = this.props;
+        const { busy, busyMessage } = this.props;
         const content = busy ? (
             <span>{busyMessage}</span>
         ) : (
-            <Button onClick={this.handleSearch}>חיפוש</Button>
+            <div>
+                <Button onClick={this.handleSearch}>חיפוש מהיר עם עדכון פריטים מהGDRIVE כל שעה</Button>
+                <br/><br/>
+                <Button onClick={this.handleNonCacheSearch}>חיפוש איטי עם עדכון מיידי של הפריטים מהGDRIVE</Button>
+            </div>
         );
         return (
             <div>{content}</div>
@@ -181,10 +220,13 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
+        this.handleTopic1Change = this.handleTopic1Change.bind(this);
+        this.handleTopic2Change = this.handleTopic2Change.bind(this);
         this.handleLanguageChange = this.handleLanguageChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleNonCacheSearch = this.handleNonCacheSearch.bind(this);
         this.state = {
-            searchText: '',
+            searchText: {freeText: '', topics: ['', '']},
             searchBusy: false,
             error: '',
             language: 'heb'
@@ -192,35 +234,73 @@ class App extends Component {
     }
 
     handleSearchTextChange(searchText) {
-        this.setState({searchText: searchText, error: ''});
+        let newSearch = {freeText: searchText, topics: this.state.searchText.topics};
+        this.setState({searchText: newSearch, error: ''});
+    }
+
+    handleTopic1Change(searchText) {
+        let newSearch = {freeText: this.state.searchText.freeText, topics: [searchText, this.state.searchText.topics[1]]};
+        this.setState({searchText: newSearch, error: ''});
+    }
+
+    handleTopic2Change(searchText) {
+        let newSearch = {freeText: this.state.searchText.freeText, topics: [this.state.searchText.topics[0], searchText]};
+        this.setState({searchText: newSearch, error: ''});
     }
 
     handleLanguageChange(language) {
         this.setState({language: language, error: ''});
     }
 
-    handleSearch() {
+    handleNonCacheSearch() {
+        this.handleSearch(true)
+    }
+
+    handleSearch(nonCache) {
         const { searchText, language } = this.state;
-        if (searchText.length > 0) {
-            this.setState({searchBusy: true, searchBusyMessage: 'תהליך החיפוש התחיל, נא להמתין...', error: ''});
-            fetch(`${process.env.REACT_APP_API_URL||'http://localhost:5050/'}search/${encodeURIComponent(language)}/${encodeURIComponent(searchText)}`)
-                .then(res => res.json())
-                .then(
-                    (res) => {
-                        this.setState({
-                            searchBusy: false,
-                            error: '',
-                            totalRecords: res['total_records'],
-                            validRecords: res['xlsx_records'],
-                            searchId: res['search_id'],
-                            previewRecords: res['first_10_new_records']
-                        });
-                    },
-                    (error) => {
-                        this.setState({searchBusy: false, error: error.message});
-                    }
-                )
+        this.setState({searchBusy: true, searchBusyMessage: 'תהליך החיפוש התחיל, נא להמתין...', error: ''});
+        let langQuery = '@attr 1=Code-language ' + language;
+        let topicsQuery = '', freeTextQuery = '', searchQuery = langQuery, searchPlainText = searchText.freeText;
+        if (searchText.topics[0].length > 0 && searchText.topics[1].length > 0) {
+            topicsQuery = '@and @attr 1=21 "' + searchText.topics[0] + '" @attr 1=21 "' + searchText.topics[1] + '"';
+            searchPlainText += ' ' + searchText.topics[0] + ', ' + searchText.topics[1];
+        } else if (searchText.topics[0].length > 0) {
+            topicsQuery = '@attr 1=21 "' + searchText.topics[0] + '"';
+            searchPlainText += ' ' + searchText.topics[0];
+        } else if (searchText.topics[1].length > 0) {
+            topicsQuery = '@attr 1=21 "' + searchText.topics[1] + '"';
+            searchPlainText += ' ' + searchText.topics[1];
         }
+        if (searchText.freeText.length > 0 ) {
+            freeTextQuery = '@attr 1=1017 "' + searchText.freeText +'"';
+        }
+        if (topicsQuery.length > 0 && freeTextQuery.length > 0) {
+            searchQuery = '@and ' + langQuery + ' @and ' + topicsQuery + ' ' + freeTextQuery;
+        } else if (freeTextQuery.length > 0) {
+            searchQuery = '@and ' + langQuery + ' ' + freeTextQuery;
+        } else if (topicsQuery.length > 0) {
+            searchQuery = '@and ' + langQuery + ' ' + topicsQuery;
+        }
+        if (searchPlainText.length === 0) {
+            searchPlainText = '-';
+        }
+        fetch(`${process.env.REACT_APP_API_URL||'http://localhost:5050/'}search/${encodeURIComponent(searchQuery)}/${encodeURIComponent(searchPlainText)}/${encodeURIComponent(language)}/${nonCache}`)
+            .then(res => res.json())
+            .then(
+                (res) => {
+                    this.setState({
+                        searchBusy: false,
+                        error: '',
+                        totalRecords: res['total_records'],
+                        validRecords: res['xlsx_records'],
+                        searchId: res['search_id'],
+                        previewRecords: res['first_10_new_records']
+                    });
+                },
+                (error) => {
+                    this.setState({searchBusy: false, error: error.message});
+                }
+            )
     }
 
     render() {
@@ -228,7 +308,7 @@ class App extends Component {
             searchText, searchBusy, error, language, previewRecords, totalRecords, validRecords, searchId,
             searchBusyMessage
         } = this.state;
-        const searchResult = (
+        const searchResult = searchBusy ? null : (
             <SearchResult previewRecords={previewRecords}
                           totalRecords={totalRecords}
                           validRecords={validRecords}
@@ -242,10 +322,13 @@ class App extends Component {
                         <Row>
                             <Col md={12}>
                                 <SearchBox onTextChange={this.handleSearchTextChange}
+                                           onTopic1Change={this.handleTopic1Change}
+                                           onTopic2Change={this.handleTopic2Change}
                                            searchText={searchText}
                                            busy={searchBusy}
                                            busyMessage={searchBusyMessage}
                                            onSearch={this.handleSearch}
+                                           onNonCacheSearch={this.handleNonCacheSearch}
                                            language={language}
                                            onLanguageChange={this.handleLanguageChange}
                                 />
@@ -265,11 +348,7 @@ class App extends Component {
                 <Grid>
                     <Row>
                         <Col md={12}>
-                            <SearchResult previewRecords={previewRecords}
-                                          totalRecords={totalRecords}
-                                          validRecords={validRecords}
-                                          searchId={searchId}
-                            />
+                            {searchResult}
                         </Col>
                     </Row>
                 </Grid>
