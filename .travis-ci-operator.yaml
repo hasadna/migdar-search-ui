@@ -3,3 +3,6 @@ encryptedDockerUser: Soe7CfrBMzbQIIrJi3yFPXWtMtk+gBpdrZrUsNpdNOfqzyiNX72CqNKxHk/
 migdar-k8sDeployKeyDecryptCmd: openssl aes-256-cbc -K $encrypted_50e35a4ef689_key
   -iv $encrypted_50e35a4ef689_iv -in .travis_ci_operator_migdar-k8s_github_deploy_key.id_rsa.enc
   -out .travis_ci_operator_migdar-k8s_github_deploy_key.id_rsa -d
+selfDeployKeyDecryptCmd: openssl aes-256-cbc -K $encrypted_384745685097_key -iv $encrypted_384745685097_iv
+  -in .travis_ci_operator_self_github_deploy_key.id_rsa.enc -out .travis_ci_operator_self_github_deploy_key.id_rsa
+  -d
