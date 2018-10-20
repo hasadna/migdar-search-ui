@@ -1,15 +1,29 @@
-#!/usr/bin/env bash
+if [ "${1}" == "install" ]; then
+    curl -L https://raw.githubusercontent.com/OriHoch/travis-ci-operator/master/travis_ci_operator.sh \
+        > $HOME/bin/travis_ci_operator.sh &&\
+    bash $HOME/bin/travis_ci_operator.sh init &&\
+    travis_ci_operator.sh docker-login
 
-DOCKER_IMAGE=uumpa/hasadna-migdar-internal-search-ui
-REACT_APP_API_URL=https://migdar-internal-search-backend.odata.org.il/
+elif [ "${1}" == "script" ]; then
+    docker build --build-arg REACT_APP_API_URL=${REACT_APP_API_LOCAL_URL} \
+           -t ${DOCKER_IMAGE}:latest .
 
-
-if [ "${1}" == "script" ]; then
-    docker build -t ${DOCKER_IMAGE}:latest . && exit 0
 elif [ "${1}" == "deploy" ]; then
-    docker push ${DOCKER_IMAGE}:latest &&\
-    docker build --build-arg REACT_APP_API_URL=${REACT_APP_API_URL} \
-           -t ${DOCKER_IMAGE}:latest-prod -t ${DOCKER_IMAGE}:${TRAVIS_COMMIT} . &&\
-    docker push ${DOCKER_IMAGE}:latest-prod && docker push ${DOCKER_IMAGE}:${TRAVIS_COMMIT} &&\
-    exit 0
-fi; exit 1
+    if [ "${TRAVIS_BRANCH}" == "master" ] &&\
+       [ "${TRAVIS_TAG}" == "" ] &&\
+       [ "${TRAVIS_PULL_REQUEST}" == "false" ]
+    then
+        docker push ${DOCKER_IMAGE}:latest &&\
+        docker build --build-arg REACT_APP_API_URL=${REACT_APP_API_REMOTE_URL} \
+               -t ${DOCKER_IMAGE}:latest-prod -t ${DOCKER_IMAGE}:${TRAVIS_COMMIT} . &&\
+        docker push ${DOCKER_IMAGE}:latest-prod && docker push ${DOCKER_IMAGE}:${TRAVIS_COMMIT} &&\
+        echo Great Success &&\
+        echo &&\
+        echo ${DOCKER_IMAGE}:latest &&\
+        echo ${DOCKER_IMAGE}:latest-prod &&\
+        echo ${DOCKER_IMAGE}:${TRAVIS_COMMIT}
+    else
+        echo Skipping deployment
+    fi
+
+fi
