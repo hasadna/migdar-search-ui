@@ -7,7 +7,7 @@ env:
   - secure: "fZ9wTzMk7bI5iRVJkfksLBuKQ7ISdDoNOqSM+6EJxKwmHkDGOAQG/Z+nu8ZtUpJmG/7VVNoEdBkLiWbA0jgPTAqBs+gDLJzT99khAhCHPHHKcQI7fq10ThdL6Z2VwzHbdoHKvmShBDaDBfDWnFBJDely9zNlMQ+u5bD1itnE/Z/Kd+iXcuVeY0xS8pTagCvBqcUdEO2FwOQQ1jCwVcc5bEoKuc7dlkbaZTaFBmuKIoaQpv9iZcXBroHbfHNqQKfzQ6X1nNbz3D0lA6tULVzAjqaiApI/X7E6Vgc7HCV6AaaZTREdTvfuk6bbF+oGan8SCWPY7ITJjtP9ZmPD59ErjixXUD5pZT5qrRje1waz8+KvKIt5ahdQamz1yXNlQ6WknW1Q2FYnigh5h8g/88PKhjZp1fF7yuc/maqhTCzUfey+06ojVxJxMr4pGHGK3IuIZKwpVk97TPqyDmrdEBnd4mU82YBuDwPbAcWceCnYFRfI1Rf/xsc+r4B/4MaYkeUvkOmEYtABMbXa5Jv3CNH73r7Brt/I8lhnm1bh9cOIuaBTGA9A2kr8BTJ9rF9/qHAZt9JfDSCRXT8YwUQv/Zj2lPXyIJVE7Vs4N9F1tYzMwGm/HJKekiBpl6fN6d/1d8A/qtyr1TnUDhnHf3SvVATsEz+SO/bU/c6TeAa2EvJv0r4="
   - DOCKER_IMAGE=uumpa/hasadna-migdar-internal-search-ui
   - REACT_APP_API_LOCAL_URL=http://localhost:5050/
-  - REACT_APP_API_REMOTE_URL=https://migdar-internal-search-backend.odata.org.il/
+  - REACT_APP_API_REMOTE_URL=https://migdar-internal-search.odata.org.il/
 services:
 - docker
 install:
