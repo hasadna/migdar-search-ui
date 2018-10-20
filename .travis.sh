@@ -17,6 +17,10 @@ elif [ "${1}" == "deploy" ]; then
         docker build --build-arg REACT_APP_API_URL=${REACT_APP_API_REMOTE_URL} \
                -t ${DOCKER_IMAGE}:latest-prod -t ${DOCKER_IMAGE}:${TRAVIS_COMMIT} . &&\
         docker push ${DOCKER_IMAGE}:latest-prod && docker push ${DOCKER_IMAGE}:${TRAVIS_COMMIT} &&\
+        travis_ci_operator.sh github-yaml-update \
+            migdar-k8s master values.auto-updated.yaml '{"internal-search-ui":{"image": "'${DOCKER_IMAGE}:${TRAVIS_COMMIT}'"}}' \
+            "automatic update of internal-search-ui" OriHoch/migdar-k8s &&\
+        echo &&\
         echo Great Success &&\
         echo &&\
         echo ${DOCKER_IMAGE}:latest &&\
