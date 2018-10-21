@@ -199,7 +199,7 @@ class SearchResult extends Component {
                 <div>
                     <h4>התקבלו {totalRecords} תוצאות מהULI, מתוכן {validRecords} תוצאות תקינות שאינן מופיעות בגוגל דרייב</h4>
                     {validRecords > 0 ? (
-                        <a target="_blank" href={(process.env.REACT_APP_API_URL||'http://localhost:5050/')+'download/'+searchId+'.xlsx'}>
+                        <a target="_blank" href={(process.env.REACT_APP_API_URL||'http://localhost:5050/')+'__download/'+searchId+'.xlsx'}>
                             ליחצו כאן להורדת קובץ אקסל עם כל התוצאות התקינות
                         </a>
                     ) : null}
@@ -284,7 +284,7 @@ class App extends Component {
         if (searchPlainText.length === 0) {
             searchPlainText = '-';
         }
-        fetch(`${process.env.REACT_APP_API_URL||'http://localhost:5050/'}search/${encodeURIComponent(searchQuery)}/${encodeURIComponent(searchPlainText)}/${encodeURIComponent(language)}/${nonCache}`)
+        fetch(`${process.env.REACT_APP_API_URL||'http://localhost:5050/'}__search/${encodeURIComponent(searchQuery)}/${encodeURIComponent(searchPlainText)}/${encodeURIComponent(language)}/${nonCache}`)
             .then(res => res.json())
             .then(
                 (res) => {
