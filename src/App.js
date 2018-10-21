@@ -73,13 +73,13 @@ class SearchBox extends Component {
             <Grid>
                 <Row>
                     <Col md={12}>
-                        <FormGroup>
-                            <ControlLabel>הזינו טקסט לחיפוש חופשי</ControlLabel>
-                            <FormControl type="text" value={searchText.freeText}
-                                         onChange={this.handleChange}
-                                         onKeyPress={this.handleKeyPress}
-                                         disabled={busy} />
-                        </FormGroup>
+                        {/*<FormGroup>*/}
+                            {/*<ControlLabel>הזינו טקסט לחיפוש חופשי</ControlLabel>*/}
+                            {/*<FormControl type="text" value={searchText.freeText}*/}
+                                         {/*onChange={this.handleChange}*/}
+                                         {/*onKeyPress={this.handleKeyPress}*/}
+                                         {/*disabled={busy} />*/}
+                        {/*</FormGroup>*/}
                         <FormGroup>
                             <ControlLabel>הזינו נושאים לחיפוש מדויק</ControlLabel>
                             <FormControl type="text" value={searchText.topics[0]}
